@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescription Formatter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        textarea, input, button {
+            display: block;
+            margin-top: 10px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h2>Prescription Input</h2>
+    <textarea id="prescription" rows="4" placeholder="Nhập đơn mắt..."></textarea>
+    <input type="date" id="pickupDate">
+    <button onclick="copyToClipboard()">Copy vào bộ nhớ tạm</button>
+    <script>
+        function parsePrescription(input) {
+            let lines = input.trim().split('\n');
+            if (lines.length < 2) return 'Invalid format';
+            function formatValue(value) {
+    let num = parseInt(value, 10);
+
+    if (num % 10 === 2) {
+      num = num * 10 + 5;
+    } 
+    else if (num % 10 === 7){
+      num = num * 10 + 5;
+    } else {
+      num = num * 10;
+    }
+
+    console.log(num);
+    let formatted = (num * 0.01).toFixed(2); // Đổi từ bước 1/8 diopters
+    return (num > 0 ? "+" : "") + formatted; // Giữ dấu + nếu giá trị dương
+}
+
+console.log(formatValue(12));  // Kết quả: +1.25
+
+            
+            function parseLine(line) {
+                let parts = line.trim().split(/\s+/);
+                if (parts.length < 3) return null;
+                return {
+                    sphere: formatValue(parts[0]),
+                    cylinder: formatValue(parts[1]),
+                    axis: parts[2],
+                    pd: parts[3] || ''
+                };
+            }
+            
+            let right = parseLine(lines[0]);
+            let left = parseLine(lines[1]);
+            if (!right || !left) return 'Invalid format';
+            
+            return `SPECTACLES PRESCRIPTION\nRight:\n  Sphere: ${right.sphere}\n  Cylinder: ${right.cylinder}\n  Axis: ${right.axis}\n  PD: ${right.pd}\nLeft:\n  Sphere: ${left.sphere}\n  Cylinder: ${left.cylinder}\n  Axis: ${left.axis}\n  PD: ${left.pd}`;
+        }
+        
+        function copyToClipboard() {
+            let inputText = document.getElementById("prescription").value;
+            let formattedText = parsePrescription(inputText);
+            let pickupDate = document.getElementById("pickupDate").value;
+            
+            if (!pickupDate) {
+                alert("Vui lòng chọn ngày!");
+                return;
+            }
+            
+            let finalText = `${formattedText}\n\nPICK-UP on ${pickupDate}`;
+            
+            const textArea = document.createElement("textarea");
+            textArea.value = finalText;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(textArea);
+            
+            alert("Đã sao chép vào bộ nhớ tạm!");
+        }
+    </script>
+</body>
+</html>
