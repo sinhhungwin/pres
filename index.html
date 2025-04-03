@@ -8,58 +8,79 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+        }
+        .form-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
         }
         textarea, input, button {
             display: block;
-            margin-top: 10px;
             width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+        }
+        .input-row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .input-row input {
+            width: 48%;
         }
     </style>
 </head>
 <body>
     <h2>Prescription Input</h2>
-    <textarea id="prescription" rows="4" placeholder="Nhập đơn mắt..."></textarea>
-    <input type="date" id="pickupDate">
-    <button onclick="copyToClipboard()">Copy vào bộ nhớ tạm</button>
+    <div class="form-container">
+        <div class="input-row">
+                    <textarea id="prescription" rows="4" placeholder="Nhập đơn mắt..."></textarea>
+        <input type="date" id="pickupDate">
+
+        </div>
+        <button onclick="copyToClipboard()">Copy vào bộ nhớ tạm</button>
+    </div>
+
     <script>
         function parsePrescription(input) {
             let lines = input.trim().split('\n');
             if (lines.length < 2) return 'Invalid format';
+            
             function formatValue(value) {
-    let num = parseInt(value, 10);
+                let num = parseInt(value, 10);
 
-    if(num >= 0) {
-      if (num % 10 === 2) {
-        num = num * 10 + 5;
-      } 
-      else if (num % 10 === 7){
-        num = num * 10 + 5;
-      } else {
-        num = num * 10;
-      }
+                if(num >= 0) {
+                    if (num % 10 === 2) {
+                        num = num * 10 + 5;
+                    } 
+                    else if (num % 10 === 7){
+                        num = num * 10 + 5;
+                    } else {
+                        num = num * 10;
+                    }
 
-      console.log(num);
-      let formatted = (num * 0.01).toFixed(2); // Đổi từ bước 1/8 diopters
-      return (num > 0 ? "+" : "") + formatted; // Giữ dấu + nếu giá trị dương
-    }
+                    console.log(num);
+                    let formatted = (num * 0.01).toFixed(2);
+                    return (num > 0 ? "+" : "") + formatted;
+                }
 
-    // if num < 0
-    if (num % 10 === -2) {
-      num = num * 10 - 5;
-    } 
-    else if (num % 10 === -7){
-      num = num * 10 - 5;
-    } else {
-      num = num * 10;
-    }
+                if (num % 10 === -2) {
+                    num = num * 10 - 5;
+                } 
+                else if (num % 10 === -7){
+                    num = num * 10 - 5;
+                } else {
+                    num = num * 10;
+                }
 
-    console.log(num);
-    let formatted = (num * 0.01).toFixed(2); // Đổi từ bước 1/8 diopters
-    return (num > 0 ? "+" : "") + formatted; // Giữ dấu + nếu giá trị dương
-}
-
-console.log(formatValue(12));  // Kết quả: +1.25
-
+                console.log(num);
+                let formatted = (num * 0.01).toFixed(2);
+                return (num > 0 ? "+" : "") + formatted;
+            }
             
             function parseLine(line) {
                 let parts = line.trim().split(/\s+/);
@@ -76,7 +97,7 @@ console.log(formatValue(12));  // Kết quả: +1.25
             let left = parseLine(lines[1]);
             if (!right || !left) return 'Invalid format';
             
-            return `SPECTACLES PRESCRIPTION\nRight:\n  Sphere: ${right.sphere}\n  Cylinder: ${right.cylinder}\n  Axis: ${right.axis}\n  PD: ${right.pd}\nLeft:\n  Sphere: ${left.sphere}\n  Cylinder: ${left.cylinder}\n  Axis: ${left.axis}\n  PD: ${left.pd}`;
+            return `SPECTACLES PRESCRIPTION\nRight:  Sphere: ${right.sphere} Cylinder: ${right.cylinder} Axis: ${right.axis} PD: ${right.pd}\nLeft:  Sphere: ${left.sphere} Cylinder: ${left.cylinder}  Axis: ${left.axis}  PD: ${left.pd}`;
         }
         
         function copyToClipboard() {
